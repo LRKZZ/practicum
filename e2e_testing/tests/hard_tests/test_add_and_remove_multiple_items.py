@@ -10,16 +10,33 @@ def test_add_and_remove_multiple_items(page):
     page.goto("https://www.saucedemo.com/")
     login_page.login("standard_user", "secret_sauce")
 
-    item_ids = ["sauce-labs-backpack", "sauce-labs-bike-light", "sauce-labs-bolt-t-shirt"]
-    for item_id in item_ids:
-        inventory_page.add_to_cart(item_id)
-    
+    inventory_page.add_to_cart("sauce-labs-backpack")
     inventory_page.open_cart()
     cart_items = cart_page.get_cart_items()
-    assert len(cart_items) == len(item_ids), "Количество товаров в корзине не совпадает"
-
-    for item_id in item_ids:
-        cart_page.remove_from_cart(item_id)
+    assert len(cart_items) == 1, "Первый товар не добавлен в корзину"
     
+    page.goto("https://www.saucedemo.com/inventory.html")
+    
+    inventory_page.add_to_cart("sauce-labs-bike-light")
+    inventory_page.open_cart()
+    cart_items = cart_page.get_cart_items()
+    assert len(cart_items) == 2, "Второй товар не добавлен в корзину"
+
+    page.goto("https://www.saucedemo.com/inventory.html")
+
+    inventory_page.add_to_cart("sauce-labs-bolt-t-shirt")
+    inventory_page.open_cart()
+    cart_items = cart_page.get_cart_items()
+    assert len(cart_items) == 3, "Третий товар не добавлен в корзину"
+
+    cart_page.remove_from_cart("sauce-labs-backpack")
+    cart_items = cart_page.get_cart_items()
+    assert len(cart_items) == 2, "Первый товар не удалён из корзины"
+    
+    cart_page.remove_from_cart("sauce-labs-bike-light")
+    cart_items = cart_page.get_cart_items()
+    assert len(cart_items) == 1, "Второй товар не удалён из корзины"
+    
+    cart_page.remove_from_cart("sauce-labs-bolt-t-shirt")
     cart_items = cart_page.get_cart_items()
     assert len(cart_items) == 0, "Корзина должна быть пуста"
